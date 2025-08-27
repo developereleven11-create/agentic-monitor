@@ -23,7 +23,9 @@ jobs:
           npm ci || npm i
           npx playwright install --with-deps
 
-      # Use ts-node as an ESM loader so .ts runs cleanly
+      - name: Build TypeScript
+        run: npx tsc
+
       - name: Run monitor
         env:
           STORE_URL: ${{ secrets.STORE_URL }}
@@ -32,8 +34,7 @@ jobs:
           CART_VERIFY_SELECTOR: ${{ secrets.CART_VERIFY_SELECTOR }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: |
-          node --loader ts-node/esm src/monitor.ts
+        run: node dist/monitor.js
 
       - name: Upload screenshots
         if: always()
