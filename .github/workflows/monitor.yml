@@ -2,12 +2,13 @@ name: Monitor
 
 on:
   schedule:
-    - cron: '*/15 * * * *' # every 15 minutes
-  workflow_dispatch: {} # allows manual "Run workflow"
+    - cron: '*/15 * * * *'   # every 15 minutes
+  workflow_dispatch: {}       # manual "Run workflow" button
 
 jobs:
   run:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,6 +23,7 @@ jobs:
           npm ci || npm i
           npx playwright install --with-deps
 
+      # Use ts-node as an ESM loader so .ts runs cleanly
       - name: Run monitor
         env:
           STORE_URL: ${{ secrets.STORE_URL }}
@@ -31,7 +33,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          npx ts-node --esm src/monitor.ts
+          node --loader ts-node/esm src/monitor.ts
 
       - name: Upload screenshots
         if: always()
