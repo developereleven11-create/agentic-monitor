@@ -1,4 +1,3 @@
-
 import OpenAI from 'openai';
 
 export interface JourneyLog {
@@ -12,9 +11,11 @@ export async function diagnose(log: JourneyLog): Promise<string> {
   const slow = log.steps.filter(s => s.ms > 5000);
   const bullets: string[] = [];
 
-  if (failures.length === 0 && slow.length.length === 0) {
+  // ✅ fixed condition
+  if (failures.length === 0 && slow.length === 0) {
     return 'All steps healthy. No action needed.';
   }
+
   if (slow.length) bullets.push(`Slow steps: ${slow.map(s => `${s.name}(${s.ms}ms)`).join(', ')}`);
   if (failures.length) bullets.push(`Failures: ${failures.map(s => `${s.name}: ${s.error}`).join(' | ')}`);
 
