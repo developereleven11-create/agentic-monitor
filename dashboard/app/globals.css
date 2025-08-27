@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+body { @apply bg-neutral-950 text-neutral-100; }
+.card { @apply rounded-2xl bg-neutral-900 border border-neutral-800 shadow-xl; }
+.badge { @apply px-2 py-0.5 rounded-full text-xs font-medium; }
+.badge-ok { @apply bg-green-500/20 text-green-400; }
+.badge-warn { @apply bg-yellow-500/20 text-yellow-400; }
+.badge-fail { @apply bg-red-500/20 text-red-400; }
+.timeline-dot { @apply w-3 h-3 rounded-full; }
