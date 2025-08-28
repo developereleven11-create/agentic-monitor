@@ -62,28 +62,29 @@ async function runJourney() {
   let screenshotPath: string | null = null;
 
   try {
+    // homepage
     await timeStep('homepage', async () => {
       await page.goto(STORE_URL, { waitUntil: 'domcontentloaded', timeout: 60000 });
       await page.waitForLoadState('networkidle', { timeout: 60000 });
     }, steps);
 
+    // product page
     await timeStep('product_page', async () => {
       await page.goto(PRODUCT_URL, { waitUntil: 'domcontentloaded', timeout: 60000 });
       await page.waitForSelector(ADD_TO_CART_SELECTOR, { timeout: 15000 });
     }, steps);
 
+    // add to cart (short drawer wait, then URL fallback)
     await timeStep('add_to_cart', async () => {
-  await page.click(ADD_TO_CART_SELECTOR, { timeout: 15000 });
+      await page.click(ADD_TO_CART_SELECTOR, { timeout: 15000 });
+      try {
+        await page.waitForSelector(CART_VERIFY_SELECTOR, { timeout: 2000 });
+      } catch {
+        await page.waitForURL(/\/cart/, { timeout: 10000 });
+      }
+    }, steps);
 
-  // Try a short drawer check first (if your theme has it),
-  // then fall back to cart URL. This avoids burning 8s.
-  try {
-    await page.waitForSelector(CART_VERIFY_SELECTOR, { timeout: 2000 });
-  } catch {
-    await page.waitForURL(/\/cart/, { timeout: 10000 });
-  }
-}, steps);
-
+    // cart loaded check
     await timeStep('cart_loaded', async () => {
       const hasCart = await page.locator(CART_VERIFY_SELECTOR).first().isVisible().catch(() => false);
       if (!hasCart && !/\/cart/.test(page.url())) {
@@ -91,38 +92,25 @@ async function runJourney() {
       }
     }, steps);
 
-    // success path
+    // Success path
     log = { steps, startedAt: new Date().toISOString(), storeUrl: STORE_URL };
-    const anyFail = steps.some((s: any) => !s.ok);
-    const anySlow = steps.some((s: any) => s.ms > 8000);
-    severity = anyFail ? 'FAIL' : anySlow ? 'WARN' : 'OK';
+    const anyStepFailed = steps.some((s: any) => !s.ok);
+    const anyStepSlow = steps.some((s: any) => s.ms > 8000);
+    severity = anyStepFailed ? 'FAIL' : anyStepSlow ? 'WARN' : 'OK';
     summary = await diagnose(log);
-    // success path
-log = { steps, startedAt: new Date().toISOString(), storeUrl: STORE_URL };
-const anyFail = steps.some((s: any) => !s.ok);
-const anySlow = steps.some((s: any) => s.ms > 8000);
-severity = anyFail ? 'FAIL' : anySlow ? 'WARN' : 'OK';
-summary = await diagnose(log);
 
-// ✅ Capture screenshot even on success
-const successShot = path.join('screenshots', `success-${Date.now()}.png`);
-await page.screenshot({ path: successShot, fullPage: true });
-screenshotPath = successShot; // set screenshot so dashboard can show it
-
-await notifySlack(
-  'Shopify WatchDog',
-  { summary, log, url: { STORE_URL, PRODUCT_URL } },
-  severity
-);
-
+    // ✅ take a success screenshot too
+    const successShot = path.join('screenshots', `success-${Date.now()}.png`);
+    await page.screenshot({ path: successShot, fullPage: true });
+    screenshotPath = successShot;
 
     await notifySlack(
-      'Shopify Journey Monitor',
+      'Shopify WatchDog',
       { summary, log, url: { STORE_URL, PRODUCT_URL } },
       severity
     );
   } catch (e: any) {
-    // failure path
+    // Failure path
     const fn = path.join('screenshots', `failure-${Date.now()}.png`);
     try { await page.screenshot({ path: fn, fullPage: true }); screenshotPath = fn; } catch {}
     const failSteps: any[] = [{ name: 'fatal', ok: false, ms: 0, error: e?.message || String(e) }];
@@ -131,7 +119,7 @@ await notifySlack(
     summary = await diagnose(log);
 
     await notifySlack(
-      'Shopify Journey Monitor',
+      'Shopify WatchDog',
       {
         summary,
         log,
@@ -142,7 +130,7 @@ await notifySlack(
       'FAIL'
     );
   } finally {
-    // persist for dashboard
+    // Persist run for dashboard
     const runRecord = {
       id: Date.now(),
       severity,
