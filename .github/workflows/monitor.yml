@@ -61,16 +61,34 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: node dist/monitor.js
 
-      - name: Persist run log (commit runs/index.json)
+          - name: Persist run log (commit runs + screenshots)
         if: always()
         working-directory: repo
         run: |
           set -e
-          echo "=== runs/index.json after agent ==="
+          echo "=== After agent ==="
           test -f runs/index.json && cat runs/index.json || echo "runs/index.json missing"
+
+          echo "=== List screenshots dir ==="
+          mkdir -p screenshots
+          ls -la screenshots || true
+
+          echo "=== Git status before commit ==="
+          git status --porcelain
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add runs/index.json screenshots/ || true
-          git commit -m "chore: persist monitor run [skip ci]" || echo "No changes to commit"
-          git push origin HEAD:${REF#refs/heads/}
+
+          # Make sure we're up-to-date on the same branch
+          git pull --rebase origin ${GITHUB_REF_NAME:-main} || true
+
+          # Stage BOTH logs and images (force add in case of .gitignore)
+          git add -A runs/index.json
+          git add -A screenshots
+          git add -f screenshots/*.png 2>/dev/null || true
+
+          echo "=== Diff to be committed ==="
+          git diff --staged --name-status || true
+
+          git commit -m "chore: persist monitor run & screenshots [skip ci]" || echo "No changes to commit"
+          git push origin HEAD:${GITHUB_REF_NAME:-main}
