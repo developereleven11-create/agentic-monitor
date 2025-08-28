@@ -12,6 +12,7 @@ type Run = {
   log: Log;
   url: { STORE_URL: string; PRODUCT_URL: string };
   screenshot?: string | null;
+  meta?: { cartMode?: 'drawer' | 'page' | null; branch?: string };
 };
 
 const RUNS_INDEX = process.env.NEXT_PUBLIC_RUNS_INDEX || '';
@@ -22,11 +23,18 @@ const totalDuration = (r: Run) => r.log.steps.reduce((s, x) => s + (x.ms || 0), 
 const hostname = (u: string) => { try { return new URL(u).hostname.replace(/^www\./,''); } catch { return u; } };
 const sevCls = (s: Run['severity']) => s === 'OK' ? 'badge badge-ok' : s === 'WARN' ? 'badge badge-warn' : 'badge badge-fail';
 
-/** Build a raw GitHub base URL to load screenshots from the same repo as index.json */
+/** Build base like .../<branch>/ from the runs index URL (works with any branch) */
 function rawBaseFromIndexUrl(indexUrl: string): string | null {
-  // Expecting .../main/runs/index.json -> return .../main/
-  const m = indexUrl.match(/^(.*\/main)\/runs\/index\.json$/);
-  return m ? `${m[1]}/` : null;
+  if (!indexUrl) return null;
+  return indexUrl.replace(/\/runs\/index\.json$/, '/');
+}
+
+/** Parse owner/repo/branch from raw URL so we can build a blob fallback */
+function parseORB(indexUrl: string): { owner: string; repo: string; branch: string } | null {
+  // https://raw.githubusercontent.com/<owner>/<repo>/<branch>/runs/index.json
+  const m = indexUrl.match(/^https:\/\/raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)\/runs\/index\.json$/);
+  if (!m) return null;
+  return { owner: m[1], repo: m[2], branch: m[3] };
 }
 
 /** What each step checks */
@@ -44,6 +52,7 @@ export default function Page() {
   const [err, setErr] = useState<string|null>(null);
 
   const rawBase = useMemo(() => rawBaseFromIndexUrl(RUNS_INDEX), []);
+  const orb = useMemo(() => parseORB(RUNS_INDEX), []);
   const brand = useMemo(() => runs[0]?.url?.STORE_URL ? hostname(runs[0].url.STORE_URL) : '', [runs]);
 
   async function load() {
@@ -123,6 +132,12 @@ export default function Page() {
                 <span className="badge badge-dim">
                   Total {fmtMs(totalDuration(run))}
                 </span>
+                {run.meta?.cartMode && (
+                  <span className="badge badge-dim">Cart mode: {run.meta.cartMode}</span>
+                )}
+                {run.meta?.branch && (
+                  <span className="badge badge-dim">Branch: {run.meta.branch}</span>
+                )}
               </div>
               <div className="text-sm text-neutral-300">{run.summary}</div>
             </div>
@@ -185,13 +200,17 @@ export default function Page() {
                             {run.url.PRODUCT_URL}
                           </a>
                         </div>
+                        {run.meta?.cartMode && (
+                          <div className="mt-1">
+                            Cart mode: <span className="kbd">{run.meta.cartMode}</span>
+                          </div>
+                        )}
+                        {run.meta?.branch && (
+                          <div className="mt-1">
+                            Branch: <span className="kbd">{run.meta.branch}</span>
+                          </div>
+                        )}
                       </div>
-                      {(run as any).meta?.cartMode && (
-  <div className="mt-1">
-    Cart mode: <span className="kbd">{(run as any).meta.cartMode}</span>
-  </div>
-)}
-
 
                       {run.screenshot && rawBase ? (
                         <div>
@@ -200,8 +219,20 @@ export default function Page() {
                             src={`${rawBase}${run.screenshot}`}
                             alt="Run screenshot"
                             className="rounded-lg border border-white/10 shadow-lg max-h-64 object-cover"
+                            onError={(e) => {
+                              // Fallback to blob URL (?raw=1) if the raw URL fails
+                              const img = e.currentTarget as HTMLImageElement;
+                              if (orb) {
+                                img.src = `https://github.com/${orb.owner}/${orb.repo}/blob/${run.meta?.branch || orb.branch}/${run.screenshot}?raw=1`;
+                              } else {
+                                (img.parentElement as HTMLElement).innerHTML =
+                                  '<div class="text-sm text-neutral-400">Screenshot exists but could not load via raw URL. If the repo is private, keep using Actions artifacts.</div>';
+                              }
+                            }}
                           />
-                          <div className="text-xs text-neutral-500 mt-1">Loaded from repo: {rawBase}{run.screenshot}</div>
+                          <div className="text-xs text-neutral-500 mt-1">
+                            From: {rawBase}{run.screenshot}
+                          </div>
                         </div>
                       ) : (
                         <div className="text-sm text-neutral-400">No screenshot</div>
