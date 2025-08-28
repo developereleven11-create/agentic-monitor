@@ -165,7 +165,7 @@ export default function Page() {
   <div className="mt-2">
     <div className="font-semibold text-neutral-200 mb-1">Screenshot</div>
     <img
-      src={`https://raw.githubusercontent.com/<OWNER>/<REPO>/main/${run.screenshot}`}
+      src={`https://raw.githubusercontent.com/developereleven11-create/agentic-monitor/main/${run.screenshot}`}
       alt="Run screenshot"
       className="rounded-lg border border-white/10 shadow-lg max-h-64 object-cover"
     />
