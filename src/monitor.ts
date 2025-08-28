@@ -13,9 +13,12 @@ const STORE_URL = process.env.STORE_URL || 'https://example.com';
 const PRODUCT_URL = process.env.PRODUCT_URL || STORE_URL + '/products/example';
 const ADD_TO_CART_SELECTOR = process.env.ADD_TO_CART_SELECTOR || 'button[name="add"]';
 
-// Explicit drawer & page selectors (KwikCart etc.)
+// Explicit drawer & page selectors (e.g., KwikCart)
 const CART_DRAWER_SELECTOR = process.env.CART_DRAWER_SELECTOR || '#CartDrawer';
 const CART_PAGE_SELECTOR   = process.env.CART_PAGE_SELECTOR   || 'form[action="/cart"]';
+
+// for dashboard URL building in edge cases
+const RUN_BRANCH = process.env.RUN_BRANCH || 'main';
 
 function ensureDir(p: string) { fs.mkdirSync(p, { recursive: true }); }
 
@@ -147,7 +150,7 @@ async function runJourney() {
 
     await notifySlack(
       'Shopify WatchDog',
-      { summary, log, url: { STORE_URL, PRODUCT_URL } },
+      { summary, log, url: { STORE_URL, PRODUCT_URL }, screenshot: screenshotPath || undefined },
       severity
     );
   } catch (e: any) {
@@ -171,7 +174,7 @@ async function runJourney() {
       'FAIL'
     );
   } finally {
-    // Persist for dashboard (include cartMode in meta)
+    // Persist for dashboard (include cartMode + branch in meta)
     const runRecord = {
       id: Date.now(),
       severity,
@@ -179,7 +182,7 @@ async function runJourney() {
       log,
       url: { STORE_URL, PRODUCT_URL },
       screenshot: screenshotPath,
-      meta: { cartMode }, // 'drawer' | 'page' | null
+      meta: { cartMode, branch: RUN_BRANCH },
     };
     try { persistRun(runRecord); } catch (e) { console.error('Persist error:', e); }
     await ctx.close();
