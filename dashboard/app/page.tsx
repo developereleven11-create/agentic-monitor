@@ -161,7 +161,19 @@ export default function Page() {
                         <div className="font-semibold text-neutral-200 mb-1">Context</div>
                         <div>Store: <a className="underline hover:opacity-80" href={run.url.STORE_URL} target="_blank">{hostname(run.url.STORE_URL)}</a></div>
                         <div className="mt-1">Product: <a className="underline hover:opacity-80" href={run.url.PRODUCT_URL} target="_blank">{run.url.PRODUCT_URL}</a></div>
-                        <div className="mt-2">Screenshot: {run.screenshot ? 'Saved in Actions artifact' : '—'}</div>
+                        {run.screenshot ? (
+  <div className="mt-2">
+    <div className="font-semibold text-neutral-200 mb-1">Screenshot</div>
+    <img
+      src={`https://raw.githubusercontent.com/<OWNER>/<REPO>/main/${run.screenshot}`}
+      alt="Run screenshot"
+      className="rounded-lg border border-white/10 shadow-lg max-h-64 object-cover"
+    />
+  </div>
+) : (
+  <div className="mt-2 text-neutral-400">No screenshot</div>
+)}
+
                       </div>
                       <div className="hr"></div>
                       <div className="text-xs text-neutral-400">
