@@ -3,32 +3,55 @@ name: Monitor
 on:
   schedule:
     - cron: '*/15 * * * *'   # every 15 minutes
-  workflow_dispatch: {}       # manual run
+  workflow_dispatch: {}
 
 jobs:
   run:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # allow pushing runs/index.json
+      contents: write   # needed to push runs/index.json
+
+    env:
+      REPO: ${{ github.repository }}
+      REF: ${{ github.ref }}
+      TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install deps
+      - name: Checkout (no external action)
         run: |
+          set -e
+          rm -rf repo
+          mkdir repo && cd repo
+          git init
+          git config --global advice.detachedHead false
+          git remote add origin https://x-access-token:${TOKEN}@github.com/${REPO}.git
+          git fetch --depth=1 origin ${REF}
+          git checkout -f FETCH_HEAD
+          git status
+          ls -la
+
+      - name: Install Node 20 (no external action)
+        working-directory: repo
+        run: |
+          set -e
+          curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+          sudo apt-get install -y nodejs
+          node -v
+          npm -v
+
+      - name: Install deps & Playwright
+        working-directory: repo
+        run: |
+          set -e
           npm ci || npm i
           npx playwright install --with-deps
 
       - name: Build
+        working-directory: repo
         run: npx tsc
 
       - name: Run monitor
+        working-directory: repo
         env:
           STORE_URL: ${{ secrets.STORE_URL }}
           PRODUCT_URL: ${{ secrets.PRODUCT_URL }}
@@ -38,33 +61,16 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: node dist/monitor.js
 
-      - name: Persist run log
+      - name: Persist run log (commit runs/index.json)
         if: always()
+        working-directory: repo
         run: |
-          echo "=== Show current runs/index.json (after agent wrote) ==="
+          set -e
+          echo "=== runs/index.json after agent ==="
           test -f runs/index.json && cat runs/index.json || echo "runs/index.json missing"
-
-          echo "=== Git status before commit ==="
-          git status --porcelain
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          # Make sure we're on main and up to date
-          git branch
-          git pull --rebase origin main || true
-
-          # Stage and commit if changed
           git add runs/index.json || true
-          git diff --staged -- runs/index.json || true
           git commit -m "chore: persist monitor run [skip ci]" || echo "No changes to commit"
-
-          # Push explicitly to main
-          git push origin HEAD:main
-
-      - name: Upload screenshots
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: screenshots
-          path: screenshots/**
+          git push origin HEAD:${REF#refs/heads/}
