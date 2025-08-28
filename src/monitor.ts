@@ -97,6 +97,24 @@ async function runJourney() {
     const anySlow = steps.some((s: any) => s.ms > 8000);
     severity = anyFail ? 'FAIL' : anySlow ? 'WARN' : 'OK';
     summary = await diagnose(log);
+    // success path
+log = { steps, startedAt: new Date().toISOString(), storeUrl: STORE_URL };
+const anyFail = steps.some((s: any) => !s.ok);
+const anySlow = steps.some((s: any) => s.ms > 8000);
+severity = anyFail ? 'FAIL' : anySlow ? 'WARN' : 'OK';
+summary = await diagnose(log);
+
+// ✅ Capture screenshot even on success
+const successShot = path.join('screenshots', `success-${Date.now()}.png`);
+await page.screenshot({ path: successShot, fullPage: true });
+screenshotPath = successShot; // set screenshot so dashboard can show it
+
+await notifySlack(
+  'Shopify WatchDog',
+  { summary, log, url: { STORE_URL, PRODUCT_URL } },
+  severity
+);
+
 
     await notifySlack(
       'Shopify Journey Monitor',
