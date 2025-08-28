@@ -2,11 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
+/* App theme */
 :root { color-scheme: dark; }
-body { @apply bg-neutral-950 text-neutral-100; }
-.card { @apply rounded-2xl bg-neutral-900 border border-neutral-800 shadow-xl; }
-.badge { @apply px-2 py-0.5 rounded-full text-xs font-medium; }
-.badge-ok { @apply bg-green-500/20 text-green-400; }
-.badge-warn { @apply bg-yellow-500/20 text-yellow-400; }
-.badge-fail { @apply bg-red-500/20 text-red-400; }
-.timeline-dot { @apply w-3 h-3 rounded-full; }
+body {
+  @apply bg-neutral-950 text-neutral-100;
+  background:
+    radial-gradient(1200px 600px at 20% -10%, rgba(88,80,236,0.15), transparent 60%),
+    radial-gradient(900px 500px at 110% 10%, rgba(34,197,94,0.10), transparent 60%),
+    radial-gradient(700px 400px at 50% 120%, rgba(236,72,153,0.10), transparent 60%),
+    #0a0a0a;
+}
+
+/* Glass card */
+.card {
+  @apply rounded-3xl border border-white/10 shadow-xl;
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  backdrop-filter: blur(8px);
+}
+
+/* Chips & utilities */
+.badge        { @apply px-2.5 py-1 rounded-full text-xs font-medium border border-white/10; }
+.badge-ok     { @apply bg-emerald-500/15 text-emerald-300 border-emerald-300/20; }
+.badge-warn   { @apply bg-amber-500/15 text-amber-300 border-amber-300/20; }
+.badge-fail   { @apply bg-rose-500/15 text-rose-300 border-rose-300/20; }
+.badge-dim    { @apply bg-white/5 text-neutral-300; }
+
+.kbd          { @apply px-1.5 py-0.5 rounded-md text-[10px] border border-white/10 bg-white/5; }
+
+.btn {
+  @apply badge-dim hover:bg-white/10 transition;
+}
+
+.timeline-dot  { @apply w-3 h-3 rounded-full shadow; }
+.dot-ok        { @apply bg-emerald-400; }
+.dot-fail      { @apply bg-rose-400; }
+.dot-warn      { @apply bg-amber-400; }
+
+.hr            { @apply border-t border-white/10; }
