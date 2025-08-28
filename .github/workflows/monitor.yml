@@ -2,14 +2,18 @@ name: Monitor
 
 on:
   schedule:
-    - cron: '*/15 * * * *'   # every 15 minutes
+    - cron: '*/15 * * * *'   # every 15 minutes (UTC)
   workflow_dispatch: {}
 
 jobs:
   run:
     runs-on: ubuntu-latest
+    timeout-minutes: 12
+    concurrency:
+      group: watchdog-monitor
+      cancel-in-progress: true
     permissions:
-      contents: write   # needed to push runs/index.json + screenshots
+      contents: write   # push runs/index.json + screenshots
 
     env:
       REPO: ${{ github.repository }}
@@ -60,7 +64,7 @@ jobs:
           ADD_TO_CART_SELECTOR: ${{ secrets.ADD_TO_CART_SELECTOR }}
           CART_DRAWER_SELECTOR: ${{ secrets.CART_DRAWER_SELECTOR }}
           CART_PAGE_SELECTOR: ${{ secrets.CART_PAGE_SELECTOR }}
-          CART_VERIFY_SELECTOR: ${{ secrets.CART_VERIFY_SELECTOR }} # backward compat (unused if drawer/page provided)
+          CART_VERIFY_SELECTOR: ${{ secrets.CART_VERIFY_SELECTOR }} # legacy
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           RUN_BRANCH: ${{ github.ref_name }}
@@ -72,7 +76,7 @@ jobs:
         run: |
           set -e
           echo "=== After agent ==="
-          test -f runs/index.json && cat runs/index.json || echo "runs/index.json missing"
+          test -f runs/index.json && head -n 50 runs/index.json || echo "runs/index.json missing"
           echo "=== List screenshots dir ==="
           mkdir -p screenshots
           ls -la screenshots || true
@@ -92,4 +96,18 @@ jobs:
           git diff --staged --name-status || true
 
           git commit -m "chore: persist monitor run & screenshots [skip ci]" || echo "No changes to commit"
+          git push origin HEAD:"${BRANCH_NAME}"
+
+      - name: Update heartbeat (last monitor run UTC)
+        if: always()
+        working-directory: repo
+        run: |
+          set -e
+          mkdir -p runs
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > runs/heartbeat.txt
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add runs/heartbeat.txt
+          git commit -m "chore: update heartbeat [skip ci]" || true
           git push origin HEAD:"${BRANCH_NAME}"
