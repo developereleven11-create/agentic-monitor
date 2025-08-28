@@ -186,6 +186,12 @@ export default function Page() {
                           </a>
                         </div>
                       </div>
+                      {(run as any).meta?.cartMode && (
+  <div className="mt-1">
+    Cart mode: <span className="kbd">{(run as any).meta.cartMode}</span>
+  </div>
+)}
+
 
                       {run.screenshot && rawBase ? (
                         <div>
