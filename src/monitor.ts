@@ -13,7 +13,7 @@ const STORE_URL = process.env.STORE_URL || 'https://example.com';
 const PRODUCT_URL = process.env.PRODUCT_URL || STORE_URL + '/products/example';
 const ADD_TO_CART_SELECTOR = process.env.ADD_TO_CART_SELECTOR || 'button[name="add"]';
 
-// NEW: explicit drawer & page selectors
+// Explicit drawer & page selectors (KwikCart etc.)
 const CART_DRAWER_SELECTOR = process.env.CART_DRAWER_SELECTOR || '#CartDrawer';
 const CART_PAGE_SELECTOR   = process.env.CART_PAGE_SELECTOR   || 'form[action="/cart"]';
 
@@ -48,20 +48,21 @@ function persistRun(run: any) {
   fs.writeFileSync(indexPath, JSON.stringify(existing, null, 2));
 }
 
+type CartMode = 'drawer' | 'page';
+
 async function runJourney() {
   const browser = await chromium.launch({ headless: true });
   const ctx = await browser.newContext();
   const page = await ctx.newPage();
 
   const steps: any[] = [];
-  const screenshotsDir = 'screenshots';
-  ensureDir(screenshotsDir);
+  ensureDir('screenshots');
 
   let severity: Severity = 'OK';
   let summary = '';
   let log: JourneyLog = { steps: [], startedAt: new Date().toISOString(), storeUrl: STORE_URL };
   let screenshotPath: string | null = null;
-  let cartMode: 'drawer' | 'page' | 'unknown' = 'unknown';
+  let cartMode: CartMode | null = null;
 
   try {
     // homepage
@@ -80,17 +81,17 @@ async function runJourney() {
     await timeStep('add_to_cart', async () => {
       await page.click(ADD_TO_CART_SELECTOR, { timeout: 15000 });
 
-      const drawerWait = page
-        .waitForSelector(CART_DRAWER_SELECTOR, { timeout: 3000 }) // short drawer wait
-        .then(() => 'drawer' as const)
+      const drawerWait: Promise<CartMode | null> = page
+        .waitForSelector(CART_DRAWER_SELECTOR, { timeout: 3000 })
+        .then(() => 'drawer' as CartMode)
         .catch(() => null);
 
-      const urlWait = page
+      const urlWait: Promise<CartMode | null> = page
         .waitForURL(/\/cart/, { timeout: 10000 })
-        .then(() => 'page' as const)
+        .then(() => 'page' as CartMode)
         .catch(() => null);
 
-      const first = await Promise.any([drawerWait, urlWait]).catch(() => null);
+      const first = await Promise.any([drawerWait, urlWait]).catch(() => null as CartMode | null);
       if (!first) throw new Error('Cart not detected (drawer or /cart).');
       cartMode = first;
     }, steps);
@@ -100,11 +101,12 @@ async function runJourney() {
       if (cartMode === 'drawer') {
         const visible = await page.locator(CART_DRAWER_SELECTOR).first().isVisible().catch(() => false);
         if (!visible) throw new Error('Drawer not visible after add to cart.');
-      } else {
-        // page mode
+      } else if (cartMode === 'page') {
         const visible = await page.locator(CART_PAGE_SELECTOR).first().isVisible().catch(() => false);
         const onUrl = /\/cart/.test(page.url());
         if (!visible && !onUrl) throw new Error('Cart page not detected after add to cart.');
+      } else {
+        throw new Error('Cart mode unknown after add to cart.');
       }
     }, steps);
 
@@ -115,7 +117,7 @@ async function runJourney() {
     severity = anyStepFailed ? 'FAIL' : anyStepSlow ? 'WARN' : 'OK';
     summary = await diagnose(log);
 
-    // ✅ Screenshot: element crop if drawer, else full page or cart form crop
+    // ✅ Screenshot: crop drawer element if present, else cart form/full page
     if (cartMode === 'drawer') {
       const el = page.locator(CART_DRAWER_SELECTOR).first();
       await el.waitFor({ state: 'visible', timeout: 2000 }).catch(() => {});
@@ -124,12 +126,10 @@ async function runJourney() {
         await el.screenshot({ path: fn });
         screenshotPath = fn;
       } catch {
-        // fallback to full page
         await page.screenshot({ path: fn, fullPage: true });
         screenshotPath = fn;
       }
     } else {
-      // cart page
       const el = page.locator(CART_PAGE_SELECTOR).first();
       const fn = path.join('screenshots', `success-cart-${Date.now()}.png`);
       try {
@@ -179,7 +179,7 @@ async function runJourney() {
       log,
       url: { STORE_URL, PRODUCT_URL },
       screenshot: screenshotPath,
-      meta: { cartMode }, // <— saved for UI
+      meta: { cartMode }, // 'drawer' | 'page' | null
     };
     try { persistRun(runRecord); } catch (e) { console.error('Persist error:', e); }
     await ctx.close();
