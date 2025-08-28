@@ -73,13 +73,16 @@ async function runJourney() {
     }, steps);
 
     await timeStep('add_to_cart', async () => {
-      await page.click(ADD_TO_CART_SELECTOR, { timeout: 15000 });
-      try {
-        await page.waitForSelector(CART_VERIFY_SELECTOR, { timeout: 8000 });
-      } catch {
-        await page.waitForURL(/\/cart/, { timeout: 8000 });
-      }
-    }, steps);
+  await page.click(ADD_TO_CART_SELECTOR, { timeout: 15000 });
+
+  // Try a short drawer check first (if your theme has it),
+  // then fall back to cart URL. This avoids burning 8s.
+  try {
+    await page.waitForSelector(CART_VERIFY_SELECTOR, { timeout: 2000 });
+  } catch {
+    await page.waitForURL(/\/cart/, { timeout: 10000 });
+  }
+}, steps);
 
     await timeStep('cart_loaded', async () => {
       const hasCart = await page.locator(CART_VERIFY_SELECTOR).first().isVisible().catch(() => false);
