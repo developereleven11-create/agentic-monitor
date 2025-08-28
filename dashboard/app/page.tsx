@@ -23,7 +23,17 @@ const totalDuration = (r: Run) => r.log.steps.reduce((s, x) => s + (x.ms || 0), 
 const hostname = (u: string) => { try { return new URL(u).hostname.replace(/^www\./,''); } catch { return u; } };
 const sevCls = (s: Run['severity']) => s === 'OK' ? 'badge badge-ok' : s === 'WARN' ? 'badge badge-warn' : 'badge badge-fail';
 
-/** Build base like .../<branch>/ from the runs index URL (works with any branch) */
+/** Convert UTC ISO string to IST human readable */
+function toIST(utcStr: string): string {
+  try {
+    const d = new Date(utcStr);
+    return d.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+  } catch {
+    return utcStr;
+  }
+}
+
+/** Build base like .../<branch>/ from the runs index URL */
 function rawBaseFromIndexUrl(indexUrl: string): string | null {
   if (!indexUrl) return null;
   return indexUrl.replace(/\/runs\/index\.json$/, '/');
@@ -31,7 +41,6 @@ function rawBaseFromIndexUrl(indexUrl: string): string | null {
 
 /** Parse owner/repo/branch from raw URL so we can build a blob fallback */
 function parseORB(indexUrl: string): { owner: string; repo: string; branch: string } | null {
-  // https://raw.githubusercontent.com/<owner>/<repo>/<branch>/runs/index.json
   const m = indexUrl.match(/^https:\/\/raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)\/runs\/index\.json$/);
   if (!m) return null;
   return { owner: m[1], repo: m[2], branch: m[3] };
@@ -70,9 +79,9 @@ export default function Page() {
       const data = await res.json();
       if (!Array.isArray(data)) throw new Error('Data is not an array.');
       setRuns(data);
-      if (data.length && openId == null) setOpenId(data[0].id); // auto-open latest
+      if (data.length && openId == null) setOpenId(data[0].id);
 
-      // Load heartbeat (best-effort)
+      // Load heartbeat
       if (HEARTBEAT_URL) {
         try {
           const hb = await fetch(HEARTBEAT_URL, { cache: 'no-store' });
@@ -120,7 +129,7 @@ export default function Page() {
         </div>
         <div className="text-xs text-neutral-400 flex gap-3 justify-start sm:justify-end">
           <span>Cron: every <span className="kbd">15m</span></span>
-          {heartbeat && <span>Last monitor tick (UTC): <span className="kbd">{heartbeat}</span></span>}
+          {heartbeat && <span>Last monitor tick (IST): <span className="kbd">{toIST(heartbeat)}</span></span>}
         </div>
       </div>
 
@@ -144,7 +153,7 @@ export default function Page() {
               <div className="flex items-center gap-3 flex-wrap">
                 <span className={sevCls(run.severity)}>{run.severity}</span>
                 <div className="font-semibold">
-                  {new Date(run.log.startedAt).toLocaleString()}
+                  {new Date(run.log.startedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
                 </div>
                 <span className="badge badge-dim">
                   Total {fmtMs(totalDuration(run))}
@@ -237,13 +246,12 @@ export default function Page() {
                             alt="Run screenshot"
                             className="rounded-lg border border-white/10 shadow-lg max-h-64 object-cover"
                             onError={(e) => {
-                              // Fallback to blob URL (?raw=1) if the raw URL fails
                               const img = e.currentTarget as HTMLImageElement;
                               if (orb) {
                                 img.src = `https://github.com/${orb.owner}/${orb.repo}/blob/${run.meta?.branch || orb.branch}/${run.screenshot}?raw=1`;
                               } else {
                                 (img.parentElement as HTMLElement).innerHTML =
-                                  '<div class="text-sm text-neutral-400">Screenshot exists but could not load via raw URL. If the repo is private, keep using Actions artifacts.</div>';
+                                  '<div class="text-sm text-neutral-400">Screenshot exists but could not load via raw URL.</div>';
                               }
                             }}
                           />
