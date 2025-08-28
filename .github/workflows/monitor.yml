@@ -58,9 +58,12 @@ jobs:
           STORE_URL: ${{ secrets.STORE_URL }}
           PRODUCT_URL: ${{ secrets.PRODUCT_URL }}
           ADD_TO_CART_SELECTOR: ${{ secrets.ADD_TO_CART_SELECTOR }}
-          CART_VERIFY_SELECTOR: ${{ secrets.CART_VERIFY_SELECTOR }}
+          CART_DRAWER_SELECTOR: ${{ secrets.CART_DRAWER_SELECTOR }}
+          CART_PAGE_SELECTOR: ${{ secrets.CART_PAGE_SELECTOR }}
+          CART_VERIFY_SELECTOR: ${{ secrets.CART_VERIFY_SELECTOR }} # backward compat (unused if drawer/page provided)
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          RUN_BRANCH: ${{ github.ref_name }}
         run: node dist/monitor.js
 
       - name: Persist run log (commit runs + screenshots)
@@ -77,7 +80,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # Stay on the same branch and update
+          # Update branch and stage changes
           git pull --rebase origin "${BRANCH_NAME}" || true
 
           # Stage BOTH logs and images (force-add PNGs even if .gitignore exists)
