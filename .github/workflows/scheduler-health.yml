@@ -1,0 +1,26 @@
+name: Scheduler Health
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'   # same cadence as your monitor
+  workflow_dispatch: {}
+
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show timestamps
+        run: |
+          echo "UTC:   $(date -u '+%Y-%m-%d %H:%M:%S')"
+          echo "IST:   $(TZ='Asia/Kolkata' date '+%Y-%m-%d %H:%M:%S')"
+          echo "Event: ${{ github.event_name }}"
+      - name: Optional Slack ping
+        if: ${{ env.SLACK_WEBHOOK_URL != '' }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [ -n "$SLACK_WEBHOOK_URL" ]; then
+            curl -X POST -H 'Content-type: application/json' \
+              --data "{\"text\":\"🕒 Scheduler Health: $(date -u '+%Y-%m-%d %H:%M:%S') UTC\"}" \
+              "$SLACK_WEBHOOK_URL"
+          fi
