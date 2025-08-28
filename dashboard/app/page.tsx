@@ -65,7 +65,7 @@ export default function Page() {
             {brand ? brand[0]?.toUpperCase() : 'S'}
           </div>
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight">Shopify Journey Monitor</h1>
+            <h1 className="text-3xl font-extrabold tracking-tight">Shopify WatchDog</h1>
             {brand && <div className="text-sm text-neutral-400 mt-0.5">{brand}</div>}
           </div>
         </div>
