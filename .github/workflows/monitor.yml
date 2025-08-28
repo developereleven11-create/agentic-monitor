@@ -71,6 +71,6 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add runs/index.json || true
+          git add runs/index.json screenshots/ || true
           git commit -m "chore: persist monitor run [skip ci]" || echo "No changes to commit"
           git push origin HEAD:${REF#refs/heads/}
