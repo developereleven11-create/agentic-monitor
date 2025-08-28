@@ -37,7 +37,6 @@ function parseORB(indexUrl: string): { owner: string; repo: string; branch: stri
   return { owner: m[1], repo: m[2], branch: m[3] };
 }
 
-/** What each step checks */
 const STEP_HELP: Record<string,string> = {
   homepage:     'Loads homepage, waits for network to go idle.',
   product_page: 'Opens product URL, waits for Add to Cart selector.',
@@ -50,21 +49,36 @@ export default function Page() {
   const [openId, setOpenId] = useState<number|null>(null);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string|null>(null);
+  const [heartbeat, setHeartbeat] = useState<string | null>(null);
 
   const rawBase = useMemo(() => rawBaseFromIndexUrl(RUNS_INDEX), []);
   const orb = useMemo(() => parseORB(RUNS_INDEX), []);
   const brand = useMemo(() => runs[0]?.url?.STORE_URL ? hostname(runs[0].url.STORE_URL) : '', [runs]);
+  const HEARTBEAT_URL = useMemo(
+    () => RUNS_INDEX ? RUNS_INDEX.replace(/\/runs\/index\.json$/, '/runs/heartbeat.txt') : '',
+    []
+  );
 
   async function load() {
     if (!RUNS_INDEX) { setErr('Environment variable NEXT_PUBLIC_RUNS_INDEX is not set.'); return; }
     try {
       setLoading(true); setErr(null);
+
+      // Load runs
       const res = await fetch(RUNS_INDEX, { cache: 'no-store' });
       if (!res.ok) throw new Error(`Fetch failed (${res.status}) for ${RUNS_INDEX}`);
       const data = await res.json();
       if (!Array.isArray(data)) throw new Error('Data is not an array.');
       setRuns(data);
       if (data.length && openId == null) setOpenId(data[0].id); // auto-open latest
+
+      // Load heartbeat (best-effort)
+      if (HEARTBEAT_URL) {
+        try {
+          const hb = await fetch(HEARTBEAT_URL, { cache: 'no-store' });
+          if (hb.ok) setHeartbeat((await hb.text()).trim());
+        } catch {}
+      }
     } catch (e: any) {
       setErr(e?.message || 'Failed to load data.');
     } finally {
@@ -72,7 +86,7 @@ export default function Page() {
     }
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
@@ -99,12 +113,15 @@ export default function Page() {
       </header>
 
       {/* Data source / messages */}
-      <div className="card p-4 flex items-center justify-between">
+      <div className="card p-4 grid sm:grid-cols-2 gap-2 items-center">
         <div className="text-xs text-neutral-400">
           Source:&nbsp;
           <span className="text-neutral-300 break-all">{RUNS_INDEX || '(not set)'}</span>
         </div>
-        <div className="text-xs text-neutral-400">Cron: every <span className="kbd">15m</span></div>
+        <div className="text-xs text-neutral-400 flex gap-3 justify-start sm:justify-end">
+          <span>Cron: every <span className="kbd">15m</span></span>
+          {heartbeat && <span>Last monitor tick (UTC): <span className="kbd">{heartbeat}</span></span>}
+        </div>
       </div>
 
       {loading && <div className="card p-6">Loading…</div>}
