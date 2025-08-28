@@ -9,28 +9,30 @@ jobs:
   run:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # needed to push runs/index.json
+      contents: write   # needed to push runs/index.json + screenshots
 
     env:
       REPO: ${{ github.repository }}
       REF: ${{ github.ref }}
+      BRANCH_NAME: ${{ github.ref_name }}
       TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-      - name: Checkout (no external action)
+      - name: Checkout (no external actions)
         run: |
           set -e
           rm -rf repo
-          mkdir repo && cd repo
+          mkdir repo
+          cd repo
           git init
           git config --global advice.detachedHead false
-          git remote add origin https://x-access-token:${TOKEN}@github.com/${REPO}.git
-          git fetch --depth=1 origin ${REF}
+          git remote add origin "https://x-access-token:${TOKEN}@github.com/${REPO}.git"
+          git fetch --depth=1 origin "${REF}"
           git checkout -f FETCH_HEAD
-          git status
+          echo "Checked out ${REPO}@${REF} into $(pwd)"
           ls -la
 
-      - name: Install Node 20 (no external action)
+      - name: Install Node 20 (no external actions)
         working-directory: repo
         run: |
           set -e
@@ -61,28 +63,24 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: node dist/monitor.js
 
-          - name: Persist run log (commit runs + screenshots)
+      - name: Persist run log (commit runs + screenshots)
         if: always()
         working-directory: repo
         run: |
           set -e
           echo "=== After agent ==="
           test -f runs/index.json && cat runs/index.json || echo "runs/index.json missing"
-
           echo "=== List screenshots dir ==="
           mkdir -p screenshots
           ls -la screenshots || true
 
-          echo "=== Git status before commit ==="
-          git status --porcelain
-
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # Make sure we're up-to-date on the same branch
-          git pull --rebase origin ${GITHUB_REF_NAME:-main} || true
+          # Stay on the same branch and update
+          git pull --rebase origin "${BRANCH_NAME}" || true
 
-          # Stage BOTH logs and images (force add in case of .gitignore)
+          # Stage BOTH logs and images (force-add PNGs even if .gitignore exists)
           git add -A runs/index.json
           git add -A screenshots
           git add -f screenshots/*.png 2>/dev/null || true
@@ -91,4 +89,4 @@ jobs:
           git diff --staged --name-status || true
 
           git commit -m "chore: persist monitor run & screenshots [skip ci]" || echo "No changes to commit"
-          git push origin HEAD:${GITHUB_REF_NAME:-main}
+          git push origin HEAD:"${BRANCH_NAME}"
