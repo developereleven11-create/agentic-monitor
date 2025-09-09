@@ -1,5 +1,45 @@
 [
   {
+    "id": 1757393750090,
+    "severity": "OK",
+    "summary": "All steps healthy. No action needed.",
+    "log": {
+      "steps": [
+        {
+          "name": "homepage",
+          "ok": true,
+          "ms": 2884
+        },
+        {
+          "name": "product_page",
+          "ok": true,
+          "ms": 706
+        },
+        {
+          "name": "add_to_cart",
+          "ok": true,
+          "ms": 1092
+        },
+        {
+          "name": "cart_loaded",
+          "ok": true,
+          "ms": 3
+        }
+      ],
+      "startedAt": "2025-09-09T04:55:49.658Z",
+      "storeUrl": "https://pokonut.com"
+    },
+    "url": {
+      "STORE_URL": "https://pokonut.com",
+      "PRODUCT_URL": "https://www.pokonut.com/products/natural-stretch-mark-cream"
+    },
+    "screenshot": "screenshots/success-cart-1757393749658.png",
+    "meta": {
+      "cartMode": "page",
+      "branch": "main"
+    }
+  },
+  {
     "id": 1757393038872,
     "severity": "OK",
     "summary": "All steps healthy. No action needed.",
@@ -19948,41 +19988,5 @@
       "PRODUCT_URL": "https://www.pokonut.com/products/natural-stretch-mark-cream"
     },
     "screenshot": "screenshots/success-1756375946974.png"
-  },
-  {
-    "id": 1756375313372,
-    "severity": "OK",
-    "summary": "All steps healthy. No action needed.",
-    "log": {
-      "steps": [
-        {
-          "name": "homepage",
-          "ok": true,
-          "ms": 2638
-        },
-        {
-          "name": "product_page",
-          "ok": true,
-          "ms": 630
-        },
-        {
-          "name": "add_to_cart",
-          "ok": true,
-          "ms": 2831
-        },
-        {
-          "name": "cart_loaded",
-          "ok": true,
-          "ms": 4
-        }
-      ],
-      "startedAt": "2025-08-28T10:01:53.037Z",
-      "storeUrl": "https://pokonut.com"
-    },
-    "url": {
-      "STORE_URL": "https://pokonut.com",
-      "PRODUCT_URL": "https://www.pokonut.com/products/natural-stretch-mark-cream"
-    },
-    "screenshot": "screenshots/success-1756375313037.png"
   }
 ]
