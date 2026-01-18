@@ -1,5 +1,45 @@
 [
   {
+    "id": 1768760853115,
+    "severity": "OK",
+    "summary": "All steps healthy. No action needed.",
+    "log": {
+      "steps": [
+        {
+          "name": "homepage",
+          "ok": true,
+          "ms": 2209
+        },
+        {
+          "name": "product_page",
+          "ok": true,
+          "ms": 521
+        },
+        {
+          "name": "add_to_cart",
+          "ok": true,
+          "ms": 1319
+        },
+        {
+          "name": "cart_loaded",
+          "ok": true,
+          "ms": 3
+        }
+      ],
+      "startedAt": "2026-01-18T18:27:32.771Z",
+      "storeUrl": "https://pokonut.com"
+    },
+    "url": {
+      "STORE_URL": "https://pokonut.com",
+      "PRODUCT_URL": "https://www.pokonut.com/products/natural-stretch-mark-cream"
+    },
+    "screenshot": "screenshots/success-cart-1768760852771.png",
+    "meta": {
+      "cartMode": "page",
+      "branch": "main"
+    }
+  },
+  {
     "id": 1768758912460,
     "severity": "OK",
     "summary": "All steps healthy. No action needed.",
@@ -19900,46 +19940,6 @@
     "screenshot": "screenshots/failure-1768076860222.png",
     "meta": {
       "cartMode": null,
-      "branch": "main"
-    }
-  },
-  {
-    "id": 1768076495073,
-    "severity": "OK",
-    "summary": "All steps healthy. No action needed.",
-    "log": {
-      "steps": [
-        {
-          "name": "homepage",
-          "ok": true,
-          "ms": 764
-        },
-        {
-          "name": "product_page",
-          "ok": true,
-          "ms": 1079
-        },
-        {
-          "name": "add_to_cart",
-          "ok": true,
-          "ms": 1141
-        },
-        {
-          "name": "cart_loaded",
-          "ok": true,
-          "ms": 3
-        }
-      ],
-      "startedAt": "2026-01-10T20:21:34.705Z",
-      "storeUrl": "https://pokonut.com"
-    },
-    "url": {
-      "STORE_URL": "https://pokonut.com",
-      "PRODUCT_URL": "https://www.pokonut.com/products/natural-stretch-mark-cream"
-    },
-    "screenshot": "screenshots/success-cart-1768076494705.png",
-    "meta": {
-      "cartMode": "page",
       "branch": "main"
     }
   }
