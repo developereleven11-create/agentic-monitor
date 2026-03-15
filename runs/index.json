@@ -1,5 +1,45 @@
 [
   {
+    "id": 1773545530112,
+    "severity": "OK",
+    "summary": "All steps healthy. No action needed.",
+    "log": {
+      "steps": [
+        {
+          "name": "homepage",
+          "ok": true,
+          "ms": 2575
+        },
+        {
+          "name": "product_page",
+          "ok": true,
+          "ms": 525
+        },
+        {
+          "name": "add_to_cart",
+          "ok": true,
+          "ms": 1063
+        },
+        {
+          "name": "cart_loaded",
+          "ok": true,
+          "ms": 3
+        }
+      ],
+      "startedAt": "2026-03-15T03:32:09.727Z",
+      "storeUrl": "https://pokonut.com"
+    },
+    "url": {
+      "STORE_URL": "https://pokonut.com",
+      "PRODUCT_URL": "https://www.pokonut.com/products/natural-stretch-mark-cream"
+    },
+    "screenshot": "screenshots/success-cart-1773545529727.png",
+    "meta": {
+      "cartMode": "page",
+      "branch": "main"
+    }
+  },
+  {
     "id": 1773540715999,
     "severity": "OK",
     "summary": "All steps healthy. No action needed.",
@@ -19954,46 +19994,6 @@
       "PRODUCT_URL": "https://www.pokonut.com/products/natural-stretch-mark-cream"
     },
     "screenshot": "screenshots/success-cart-1772531783059.png",
-    "meta": {
-      "cartMode": "page",
-      "branch": "main"
-    }
-  },
-  {
-    "id": 1772528920607,
-    "severity": "OK",
-    "summary": "All steps healthy. No action needed.",
-    "log": {
-      "steps": [
-        {
-          "name": "homepage",
-          "ok": true,
-          "ms": 2464
-        },
-        {
-          "name": "product_page",
-          "ok": true,
-          "ms": 980
-        },
-        {
-          "name": "add_to_cart",
-          "ok": true,
-          "ms": 1744
-        },
-        {
-          "name": "cart_loaded",
-          "ok": true,
-          "ms": 7
-        }
-      ],
-      "startedAt": "2026-03-03T09:08:40.375Z",
-      "storeUrl": "https://pokonut.com"
-    },
-    "url": {
-      "STORE_URL": "https://pokonut.com",
-      "PRODUCT_URL": "https://www.pokonut.com/products/natural-stretch-mark-cream"
-    },
-    "screenshot": "screenshots/success-cart-1772528920375.png",
     "meta": {
       "cartMode": "page",
       "branch": "main"
