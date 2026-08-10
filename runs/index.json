@@ -1,5 +1,45 @@
 [
   {
+    "id": 1786372598645,
+    "severity": "OK",
+    "summary": "All steps healthy. No action needed.",
+    "log": {
+      "steps": [
+        {
+          "name": "homepage",
+          "ok": true,
+          "ms": 3189
+        },
+        {
+          "name": "product_page",
+          "ok": true,
+          "ms": 550
+        },
+        {
+          "name": "add_to_cart",
+          "ok": true,
+          "ms": 1077
+        },
+        {
+          "name": "cart_loaded",
+          "ok": true,
+          "ms": 3
+        }
+      ],
+      "startedAt": "2026-08-10T14:36:38.391Z",
+      "storeUrl": "https://pokonut.com"
+    },
+    "url": {
+      "STORE_URL": "https://pokonut.com",
+      "PRODUCT_URL": "https://www.pokonut.com/products/natural-stretch-mark-cream"
+    },
+    "screenshot": "screenshots/success-cart-1786372598391.png",
+    "meta": {
+      "cartMode": "page",
+      "branch": "main"
+    }
+  },
+  {
     "id": 1786369555356,
     "severity": "OK",
     "summary": "All steps healthy. No action needed.",
@@ -19046,32 +19086,6 @@
     "screenshot": "screenshots/success-cart-1784711798315.png",
     "meta": {
       "cartMode": "page",
-      "branch": "main"
-    }
-  },
-  {
-    "id": 1784711446606,
-    "severity": "FAIL",
-    "summary": "Failures: fatal: page.waitForSelector: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator('button[name=\"add\"]') to be visible\n\nAI summary unavailable (OPENAI_API_KEY not set).",
-    "log": {
-      "steps": [
-        {
-          "name": "fatal",
-          "ok": false,
-          "ms": 0,
-          "error": "page.waitForSelector: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator('button[name=\"add\"]') to be visible\n"
-        }
-      ],
-      "startedAt": "2026-07-22T09:10:46.373Z",
-      "storeUrl": "https://pokonut.com"
-    },
-    "url": {
-      "STORE_URL": "https://pokonut.com",
-      "PRODUCT_URL": "https://www.pokonut.com/products/natural-stretch-mark-cream"
-    },
-    "screenshot": "screenshots/failure-1784711446343.png",
-    "meta": {
-      "cartMode": null,
       "branch": "main"
     }
   }
