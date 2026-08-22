@@ -1,5 +1,45 @@
 [
   {
+    "id": 1787423656009,
+    "severity": "OK",
+    "summary": "All steps healthy. No action needed.",
+    "log": {
+      "steps": [
+        {
+          "name": "homepage",
+          "ok": true,
+          "ms": 2741
+        },
+        {
+          "name": "product_page",
+          "ok": true,
+          "ms": 704
+        },
+        {
+          "name": "add_to_cart",
+          "ok": true,
+          "ms": 1069
+        },
+        {
+          "name": "cart_loaded",
+          "ok": true,
+          "ms": 1
+        }
+      ],
+      "startedAt": "2026-08-22T18:34:15.667Z",
+      "storeUrl": "https://pokonut.com"
+    },
+    "url": {
+      "STORE_URL": "https://pokonut.com",
+      "PRODUCT_URL": "https://www.pokonut.com/products/natural-stretch-mark-cream"
+    },
+    "screenshot": "screenshots/success-cart-1787423655667.png",
+    "meta": {
+      "cartMode": "page",
+      "branch": "main"
+    }
+  },
+  {
     "id": 1787423209981,
     "severity": "OK",
     "summary": "All steps healthy. No action needed.",
@@ -19956,32 +19996,6 @@
     "screenshot": "screenshots/success-cart-1786481354762.png",
     "meta": {
       "cartMode": "page",
-      "branch": "main"
-    }
-  },
-  {
-    "id": 1786477757220,
-    "severity": "FAIL",
-    "summary": "Failures: fatal: page.goto: net::ERR_NAME_NOT_RESOLVED at https://pokonut.com/\nCall log:\n  - navigating to \"https://pokonut.com/\", waiting until \"domcontentloaded\"\n\nAI summary unavailable (OPENAI_API_KEY not set).",
-    "log": {
-      "steps": [
-        {
-          "name": "fatal",
-          "ok": false,
-          "ms": 0,
-          "error": "page.goto: net::ERR_NAME_NOT_RESOLVED at https://pokonut.com/\nCall log:\n  - navigating to \"https://pokonut.com/\", waiting until \"domcontentloaded\"\n"
-        }
-      ],
-      "startedAt": "2026-08-11T19:49:17.016Z",
-      "storeUrl": "https://pokonut.com"
-    },
-    "url": {
-      "STORE_URL": "https://pokonut.com",
-      "PRODUCT_URL": "https://www.pokonut.com/products/natural-stretch-mark-cream"
-    },
-    "screenshot": "screenshots/failure-1786477756952.png",
-    "meta": {
-      "cartMode": null,
       "branch": "main"
     }
   }
