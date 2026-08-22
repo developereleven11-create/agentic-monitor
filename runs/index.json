@@ -1,5 +1,45 @@
 [
   {
+    "id": 1787423209981,
+    "severity": "OK",
+    "summary": "All steps healthy. No action needed.",
+    "log": {
+      "steps": [
+        {
+          "name": "homepage",
+          "ok": true,
+          "ms": 2896
+        },
+        {
+          "name": "product_page",
+          "ok": true,
+          "ms": 828
+        },
+        {
+          "name": "add_to_cart",
+          "ok": true,
+          "ms": 1092
+        },
+        {
+          "name": "cart_loaded",
+          "ok": true,
+          "ms": 2
+        }
+      ],
+      "startedAt": "2026-08-22T18:26:49.610Z",
+      "storeUrl": "https://pokonut.com"
+    },
+    "url": {
+      "STORE_URL": "https://pokonut.com",
+      "PRODUCT_URL": "https://www.pokonut.com/products/natural-stretch-mark-cream"
+    },
+    "screenshot": "screenshots/success-cart-1787423209610.png",
+    "meta": {
+      "cartMode": "page",
+      "branch": "main"
+    }
+  },
+  {
     "id": 1787420958390,
     "severity": "OK",
     "summary": "All steps healthy. No action needed.",
@@ -19942,46 +19982,6 @@
     "screenshot": "screenshots/failure-1786477756952.png",
     "meta": {
       "cartMode": null,
-      "branch": "main"
-    }
-  },
-  {
-    "id": 1786476001940,
-    "severity": "WARN",
-    "summary": "Slow steps: homepage(9039ms)\nAI summary unavailable (OPENAI_API_KEY not set).",
-    "log": {
-      "steps": [
-        {
-          "name": "homepage",
-          "ok": true,
-          "ms": 9039
-        },
-        {
-          "name": "product_page",
-          "ok": true,
-          "ms": 762
-        },
-        {
-          "name": "add_to_cart",
-          "ok": true,
-          "ms": 1164
-        },
-        {
-          "name": "cart_loaded",
-          "ok": true,
-          "ms": 2
-        }
-      ],
-      "startedAt": "2026-08-11T19:20:01.565Z",
-      "storeUrl": "https://pokonut.com"
-    },
-    "url": {
-      "STORE_URL": "https://pokonut.com",
-      "PRODUCT_URL": "https://www.pokonut.com/products/natural-stretch-mark-cream"
-    },
-    "screenshot": "screenshots/success-cart-1786476001565.png",
-    "meta": {
-      "cartMode": "page",
       "branch": "main"
     }
   }
