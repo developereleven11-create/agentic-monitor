@@ -1,5 +1,45 @@
 [
   {
+    "id": 1789659693883,
+    "severity": "OK",
+    "summary": "All steps healthy. No action needed.",
+    "log": {
+      "steps": [
+        {
+          "name": "homepage",
+          "ok": true,
+          "ms": 3278
+        },
+        {
+          "name": "product_page",
+          "ok": true,
+          "ms": 771
+        },
+        {
+          "name": "add_to_cart",
+          "ok": true,
+          "ms": 1293
+        },
+        {
+          "name": "cart_loaded",
+          "ok": true,
+          "ms": 2
+        }
+      ],
+      "startedAt": "2026-09-17T15:41:33.487Z",
+      "storeUrl": "https://pokonut.com"
+    },
+    "url": {
+      "STORE_URL": "https://pokonut.com",
+      "PRODUCT_URL": "https://www.pokonut.com/products/natural-stretch-mark-cream"
+    },
+    "screenshot": "screenshots/success-cart-1789659693488.png",
+    "meta": {
+      "cartMode": "page",
+      "branch": "main"
+    }
+  },
+  {
     "id": 1789657899743,
     "severity": "FAIL",
     "summary": "Failures: fatal: page.click: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator('button[name=\"add\"]')\n    - locator resolved to 9 elements. Proceeding with the first one: <button name=\"add\" type=\"submit\" id=\"ProductSubmitButton-template--27436097962293__main\" class=\"product-form__submit product-form__submit1 button button--full-width button--secondary\">…</button>\n  - attempting click action\n    - waiting for element to be visible, enabled and stable\n    - element is visible, enabled and stable\n    - scrolling into view if needed\n    - done scrolling\n    - performing click action\n    - click action done\n    - waiting for scheduled navigations to finish\n\nAI summary unavailable (OPENAI_API_KEY not set).",
@@ -19940,46 +19980,6 @@
       "PRODUCT_URL": "https://www.pokonut.com/products/natural-stretch-mark-cream"
     },
     "screenshot": "screenshots/success-cart-1787388557718.png",
-    "meta": {
-      "cartMode": "page",
-      "branch": "main"
-    }
-  },
-  {
-    "id": 1787387223323,
-    "severity": "OK",
-    "summary": "All steps healthy. No action needed.",
-    "log": {
-      "steps": [
-        {
-          "name": "homepage",
-          "ok": true,
-          "ms": 3063
-        },
-        {
-          "name": "product_page",
-          "ok": true,
-          "ms": 727
-        },
-        {
-          "name": "add_to_cart",
-          "ok": true,
-          "ms": 1015
-        },
-        {
-          "name": "cart_loaded",
-          "ok": true,
-          "ms": 2
-        }
-      ],
-      "startedAt": "2026-08-22T08:27:03.091Z",
-      "storeUrl": "https://pokonut.com"
-    },
-    "url": {
-      "STORE_URL": "https://pokonut.com",
-      "PRODUCT_URL": "https://www.pokonut.com/products/natural-stretch-mark-cream"
-    },
-    "screenshot": "screenshots/success-cart-1787387223091.png",
     "meta": {
       "cartMode": "page",
       "branch": "main"
