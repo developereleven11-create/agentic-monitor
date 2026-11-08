@@ -1,5 +1,31 @@
 [
   {
+    "id": 1794176589129,
+    "severity": "FAIL",
+    "summary": "Failures: fatal: page.waitForLoadState: Timeout 60000ms exceeded.\n=========================== logs ===========================\n  \"load\" event fired\n============================================================\nAI summary unavailable (OPENAI_API_KEY not set).",
+    "log": {
+      "steps": [
+        {
+          "name": "fatal",
+          "ok": false,
+          "ms": 0,
+          "error": "page.waitForLoadState: Timeout 60000ms exceeded.\n=========================== logs ===========================\n  \"load\" event fired\n============================================================"
+        }
+      ],
+      "startedAt": "2026-11-08T22:23:08.901Z",
+      "storeUrl": "https://pokonut.com"
+    },
+    "url": {
+      "STORE_URL": "https://pokonut.com",
+      "PRODUCT_URL": "https://www.pokonut.com/products/natural-stretch-mark-cream"
+    },
+    "screenshot": "screenshots/failure-1794176587962.png",
+    "meta": {
+      "cartMode": null,
+      "branch": "main"
+    }
+  },
+  {
     "id": 1794164528595,
     "severity": "FAIL",
     "summary": "Failures: fatal: page.waitForLoadState: Timeout 60000ms exceeded.\n=========================== logs ===========================\n  \"load\" event fired\n============================================================\nAI summary unavailable (OPENAI_API_KEY not set).",
@@ -15322,32 +15348,6 @@
     "screenshot": "screenshots/success-cart-1789659693488.png",
     "meta": {
       "cartMode": "page",
-      "branch": "main"
-    }
-  },
-  {
-    "id": 1789657899743,
-    "severity": "FAIL",
-    "summary": "Failures: fatal: page.click: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator('button[name=\"add\"]')\n    - locator resolved to 9 elements. Proceeding with the first one: <button name=\"add\" type=\"submit\" id=\"ProductSubmitButton-template--27436097962293__main\" class=\"product-form__submit product-form__submit1 button button--full-width button--secondary\">…</button>\n  - attempting click action\n    - waiting for element to be visible, enabled and stable\n    - element is visible, enabled and stable\n    - scrolling into view if needed\n    - done scrolling\n    - performing click action\n    - click action done\n    - waiting for scheduled navigations to finish\n\nAI summary unavailable (OPENAI_API_KEY not set).",
-    "log": {
-      "steps": [
-        {
-          "name": "fatal",
-          "ok": false,
-          "ms": 0,
-          "error": "page.click: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator('button[name=\"add\"]')\n    - locator resolved to 9 elements. Proceeding with the first one: <button name=\"add\" type=\"submit\" id=\"ProductSubmitButton-template--27436097962293__main\" class=\"product-form__submit product-form__submit1 button button--full-width button--secondary\">…</button>\n  - attempting click action\n    - waiting for element to be visible, enabled and stable\n    - element is visible, enabled and stable\n    - scrolling into view if needed\n    - done scrolling\n    - performing click action\n    - click action done\n    - waiting for scheduled navigations to finish\n"
-        }
-      ],
-      "startedAt": "2026-09-17T15:11:39.611Z",
-      "storeUrl": "https://pokonut.com"
-    },
-    "url": {
-      "STORE_URL": "https://pokonut.com",
-      "PRODUCT_URL": "https://www.pokonut.com/products/natural-stretch-mark-cream"
-    },
-    "screenshot": "screenshots/failure-1789657880497.png",
-    "meta": {
-      "cartMode": null,
       "branch": "main"
     }
   }
